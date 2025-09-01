@@ -1,38 +1,115 @@
 ---
-// src/components/Header.astro
 import HeaderControls from './HeaderControls.astro';
-import HeaderTitle from './HeaderTitle';
+import HeaderTitle from './HeaderTitle.astro';
 ---
-<!-- HeaderMobile.astro -->
-<header id="header-mobile" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl rounded-main shadow-lg bg-background border border-white/10 px-4 py-2 flex md:hidden flex-col">
+<header
+  id="header-mobile"
+  data-open="false"
+  class="site-header fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl rounded-[var(--border-radius-header)] shadow-lg px-6 py-4 flex md:hidden flex-col"
+>
   <div class="flex justify-between items-center">
-    <a href="#" class="font-bold text-xl text-text">
+    <a href="/" class="font-bold text-xl text-text">
       <HeaderTitle />
     </a>
-    <button id="hamburger" class="text-text focus:outline-none">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+
+    <button
+      id="hamburger"
+      class="text-text focus:outline-none"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Abrir menú"
+    >
+      <!-- Icono hamburguesa -->
+      <svg class="icon-menu h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" d="M4 6H20" />
+        <path stroke-linecap="round" d="M4 12H20" />
+        <path stroke-linecap="round" d="M4 18H20" />
+      </svg>
+      <!-- Icono cerrar -->
+      <svg class="icon-close h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 6L18 18" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18" />
       </svg>
     </button>
   </div>
-  <div id="mobile-menu" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-    <nav class="mt-2 flex flex-col gap-2">
-      <a href="#projects" class="text-text/80 hover:text-primary transition-colors">Proyectos</a>
-      <a href="#contact" class="text-text/80 hover:text-primary transition-colors">Contacto</a>
+
+  <div
+    id="mobile-menu"
+    class="max-h-0 overflow-hidden transition-[max-height] duration-300 ease-in-out"
+  >
+    <nav class="mt-2 pt-2 border-t border-white/10 flex flex-col gap-3">
+      <a href="#projects" class="py-1 text-text/80 hover:text-primary transition-colors">Proyectos</a>
+      <a href="#contact" class="py-1 text-text/80 hover:text-primary transition-colors">Contacto</a>
       <HeaderControls mobile={true} />
     </nav>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    // Soporta carga inicial y transiciones de Astro
+    const run = () => {
+      const header = document.getElementById('header-mobile');
       const hamburger = document.getElementById('hamburger');
       const mobileMenu = document.getElementById('mobile-menu');
+      if (!header || !hamburger || !mobileMenu) return;
+
       let open = false;
 
-      hamburger.addEventListener('click', () => {
-        open = !open;
-        mobileMenu.style.maxHeight = open ? mobileMenu.scrollHeight + 'px' : '0px';
+      /** @param {boolean} nextOpen */
+      const toggle = (nextOpen) => {
+        open = nextOpen;
+        header.setAttribute('data-open', String(open));
+        hamburger.setAttribute('aria-expanded', String(open));
+        hamburger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+
+        // Medir altura SIN contar el dropdown de temas (lo forzamos oculto mientras medimos)
+        header.setAttribute('data-measuring', 'true');
+        mobileMenu.style.maxHeight = '0px';
+        requestAnimationFrame(() => {
+          const target = Math.min(
+            mobileMenu.scrollHeight,
+            Math.round(window.innerHeight * 0.7)
+          );
+          header.removeAttribute('data-measuring');
+          mobileMenu.style.maxHeight = open ? target + 'px' : '0px';
+        });
+      };
+
+      hamburger.addEventListener('click', () => toggle(!open));
+
+      // Cerrar al navegar por anclas internas
+      mobileMenu.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener('click', () => toggle(false));
       });
-    });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', run, { once: true });
+    } else {
+      run();
+    }
+    document.addEventListener('astro:page-load', run);
   </script>
+
+  <style is:global>
+    /* Alternar íconos */
+    #header-mobile .icon-close { display: none; }
+    #header-mobile[data-open="true"] .icon-menu { display: none; }
+    #header-mobile[data-open="true"] .icon-close { display: inline-block; }
+
+    /* El menú colapsable hereda la forma del header */
+    #header-mobile #mobile-menu { border-radius: inherit; }
+
+    /* 👉 cuando el header está abierto, permitimos que el dropdown (absolute) se vea */
+    #header-mobile[data-open="true"] #mobile-menu { overflow: visible; }
+
+    /* Durante la medición del alto, nos aseguramos de que el dropdown NO compute altura */
+    #header-mobile[data-measuring="true"] .theme-options { display: none !important; }
+
+    /* 📐 GLASS en mobile: NO full pill. Redondeo moderado */
+    @media (max-width: 767px) {
+      [data-theme='liquid-glass'] #header-mobile { border-radius: 2rem; }
+      [data-theme='liquid-glass'] #header-mobile #mobile-menu { border-radius: inherit; }
+    }
+  </style>
+
 </header>

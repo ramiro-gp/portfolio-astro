@@ -1,6 +1,4 @@
 ---
-// HeaderTitle.astro
 import HeaderTitleClient from './HeaderTitle.tsx';
 ---
-
-<HeaderTitleClient client:load />
+<HeaderTitleClient client:only="react" />

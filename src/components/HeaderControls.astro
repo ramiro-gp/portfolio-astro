@@ -4,38 +4,44 @@ import ThemeIcon from './ThemeIcon.astro';
 const themes = ['neobrutalist', 'square', 'liquid-glass'] as const;
 const { mobile = false } = Astro.props;
 
-const containerClass = [
-  'theme-switcher-container',
-  mobile ? 'mt-2' : 'relative'
+/* Alineado perfecto en mobile: dos botones iguales (h-9 w-9) */
+const wrapperClass = mobile
+  ? 'flex w-full justify-end items-center gap-2 mb-2'
+  : 'flex items-center gap-4 w-full';
+
+const containerClass = ['theme-switcher-container', 'relative', 'inline-flex'].join(' ');
+
+/* Botón trigger del tema: tamaño fijo */
+const triggerClass = [
+  'theme-switcher-trigger',
+  'h-9 w-9 inline-flex items-center justify-center',
+  'text-text',
+  'rounded-btn',
+  'border border-text/50 hover:border-primary'
 ].join(' ');
 
-const optionsClass = [
-  'theme-options',
-  'mt-2',
-  'p-1',
-  'rounded-main',
-  'shadow-lg',
-  mobile ? '' : 'absolute top-full w-max'
-].join(' ');
+/* Panel SIEMPRE overlay (absolute), no ocupa layout */
+const optionsClass = ['theme-options'].join(' ');
 ---
-<div class="flex items-center gap-4 w-full" class:!flex-col={mobile}>
+<div class={wrapperClass}>
   <div class={containerClass} data-state="closed">
-    <button type="button" class="theme-switcher-trigger text-text p-1.5 rounded-btn border border-text/50 hover:border-primary w-full">
+    <button type="button" class={triggerClass} aria-label="Cambiar tema">
       {themes.map((theme) => (
-        <div data-icon-for={theme} class="theme-icon-wrapper mx-auto">
+        <div data-icon-for={theme} class="theme-icon-wrapper">
           <ThemeIcon theme={theme} />
         </div>
       ))}
     </button>
 
-    <div class={optionsClass}>
+    <div class={optionsClass} role="menu" aria-label="Elegir tema">
       <div class="flex flex-col items-center gap-1">
         {themes.map((theme) => (
           <button 
             type="button"
             data-theme-button={theme}
-            class="theme-button p-1.5 rounded-btn hover:bg-white/10 w-full"
+            class="theme-button p-2 rounded-btn hover:bg-white/10 w-full"
             aria-label={`Cambiar a tema ${theme}`}
+            role="menuitem"
           >
             <ThemeIcon theme={theme} />
           </button>
@@ -44,8 +50,11 @@ const optionsClass = [
     </div>
   </div>
 
-  <button type="button" class="mode-toggle text-text p-1.5 rounded-btn border border-text/50 hover:border-primary transition-colors flex-shrink-0">
-    <!-- Sol / Luna -->
+  <button
+    type="button"
+    class="mr-2 mode-toggle h-9 w-9 inline-flex items-center justify-center text-text rounded-btn border border-text/50 hover:border-primary transition-colors"
+    aria-label="Cambiar modo"
+  >
     <svg class="sun-icon h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 2V4M12 20V22M4 12H2M6.31412 6.31412L4.8999 4.8999M17.6859 6.31412L19.1001 4.8999M6.31412 17.69L4.8999 19.1042M17.6859 17.69L19.1001 19.1042M22 12H20M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
@@ -55,87 +64,103 @@ const optionsClass = [
   </button>
 </div>
 
-
-
-
 <style is:global>
-  /* --- LÓGICA DEL BOTÓN DE MODO --- */
-  .moon-icon { display: block; }
-  .sun-icon { display: none; }
-  [data-mode="dark"] .moon-icon { display: none; }
-  [data-mode="dark"] .sun-icon { display: block; }
+/* --- LÓGICA DEL BOTÓN DE MODO --- */
+.moon-icon { display: block; }
+.sun-icon { display: none; }
+[data-mode="dark"] .moon-icon { display: none; }
+[data-mode="dark"] .sun-icon { display: block; }
 
-  /* --- LÓGICA DEL BOTÓN DE TEMA ACTIVO --- */
-  .theme-icon-wrapper { display: none; }
-  .theme-icon-wrapper[data-active='true'] { display: block; }
+/* --- LÓGICA DEL BOTÓN DE TEMA ACTIVO --- */
+.theme-icon-wrapper { display: none; }
+.theme-icon-wrapper[data-active='true'] { display: block; }
 
-  
-  /* ESTILOS DEL PANEL DESPLEGABLE */
+/* Panel overlay: mismo ancho que el botón (left:0; right:0) */
+.theme-switcher-container { position: relative; }
+.theme-options {
+  --panel-bg: var(--header-panel-bg, var(--header-bg));
+  --panel-border: var(--header-border);
+  --panel-text: var(--header-text);
 
-  /* --- Panel para TEMA CUADRADO --- */
-  [data-theme='square'] #theme-options {
-    background-color: #18181b;
-  }
-  [data-theme='square'][data-mode='light'] #theme-options svg {
-    color: white;
-  }
-  
-  /* --- PANEL NEOBRUTALISTA (SEPARADO Y CORREGIDO) --- */
-  [data-theme='neobrutalist'] #theme-options {
-    background-color: var(--accent-color);
-    border: 2px solid var(--text-color);
-    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--shadow-color);
-  }
-  [data-theme='neobrutalista'] #theme-options svg {
-    color: var(--bg-color);
-  }
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  color: var(--panel-text);
+  border-radius: var(--border-radius-btn, var(--border-radius-header, 0.75rem));
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 
-  /* --- Panel para LIQUID GLASS --- */
-  [data-theme='liquid-glass'][data-mode='light'] #theme-options {
-    background: rgba(255, 255, 255, 0.5);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
-  }
-  [data-theme='liquid-glass'][data-mode='dark'] #theme-options {
-    background: rgba(12, 28, 43, 0.5);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
-  }
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;          /* => igual ancho que el trigger */
+  z-index: 60;
 
-  /* SOMBRA Y HOVER PARA BOTONES DEL HEADER (NEOBRUTALISMO)*/
-  
-  /* Estado base de los botones en tema Neobrutalista */
-  [data-theme='neobrutalist'] #theme-switcher-trigger,
-  [data-theme='neobrutalist'] #mode-toggle {
-    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--shadow-color);
-    transition: all 0.2s ease-out;
-  }
-
-  /* Estado hover para agrandar la sombra */
-  [data-theme='neobrutalist'] #theme-switcher-trigger:hover,
-  [data-theme='neobrutalist'] #mode-toggle:hover {
-    box-shadow: 6px 6px 0 var(--shadow-color); /* Aumentamos el offset de 4px a 8px */
-    transform: translate(-1px, -1px); /* Opcional: un pequeño movimiento para más feedback */
-  }
-
-  .theme-options {
-  transition: all 0.2s ease-in-out;
+  /* cerrado por defecto: no ocupa layout ni scrollHeight */
+  display: none;
   opacity: 0;
+  transform: translateY(-4px);
   pointer-events: none;
-  transform: scale(0.95);
+  transition: opacity .14s ease, transform .14s ease;
 }
 
 .theme-switcher-container[data-state='open'] .theme-options {
+  display: block;
   opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
-  transform: scale(1);
 }
 
-/* Solo en desktop (cuando .theme-options está posicionada flotante) */
-.theme-switcher-container:not(.mobile) .theme-options {
-  position: absolute;
-  top: 100%;
-  left: 0;
+/* Botones internos */
+.theme-options svg { color: var(--panel-text); }
+.theme-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  width: 100%;
+  border-radius: inherit;
+  transition: background-color .12s ease;
+}
+.theme-button:hover { background-color: rgba(255,255,255,0.08); }
+
+/* Neo: sombras sólidas para los botones */
+[data-theme='neobrutalist'] .theme-switcher-trigger,
+[data-theme='neobrutalist'] .mode-toggle {
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--shadow-color);
+  transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+}
+[data-theme='neobrutalist'] .theme-switcher-trigger:hover,
+[data-theme='neobrutalist'] .mode-toggle:hover {
+  box-shadow: 6px 6px 0 var(--shadow-color);
+  transform: translate(-1px, -1px);
 }
 
+/* Glass: panel redondo + blur, sin hovers que se salgan */
+[data-theme='liquid-glass'] .theme-options {
+  border-radius: 9999px;
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+[data-theme='liquid-glass'] .theme-button { border-radius: 0; }
+[data-theme='liquid-glass'] .theme-button:first-child { border-top-left-radius: 9999px; border-top-right-radius: 9999px; }
+[data-theme='liquid-glass'] .theme-button:last-child  { border-bottom-left-radius: 9999px; border-bottom-right-radius: 9999px; }
 </style>
+
+<!-- Fallback ultra simple por si el script global no montó aún -->
+<script is:inline>
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll('.theme-switcher-container').forEach((c) => {
+      const t = c.querySelector('.theme-switcher-trigger');
+      if (!t) return;
+      t.addEventListener('click', (e) => {
+        e.stopPropagation();
+        c.setAttribute('data-state', c.getAttribute('data-state') === 'open' ? 'closed' : 'open');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      document.querySelectorAll('.theme-switcher-container[data-state="open"]').forEach((c) => {
+        if (!c.contains(e.target)) c.setAttribute('data-state', 'closed');
+      });
+    });
+  });
+</script>

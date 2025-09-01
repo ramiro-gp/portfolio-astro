@@ -116,56 +116,78 @@ h1, h2, h3, h4, h5, h6 {
 
 
 /* HEADER */
-/* Header Neobrutalista */
-[data-theme='neobrutalist'] #header-island > div,
-[data-theme='neobrutalist'] #header-island > #mobile-menu {
-  background-color: var(--accent-color); /* Fondo azul apagado */
-  border: 2px solid var(--text-color); /* Borde sólido */
+
+/* Neobrutalist */
+[data-theme='neobrutalist'] .site-header {
+  --header-bg: var(--accent-color);
+  --header-border: var(--text-color);
+  --header-text: var(--bg-color);
+
+  background-color: var(--header-bg);
+  border: 2px solid var(--header-border);
 }
-[data-theme='neobrutalist'] #header-island a,
-[data-theme='neobrutalist'] #header-island span,
-[data-theme='neobrutalist'] #header-island select,
-[data-theme='neobrutalist'] #header-island button {
-    color: var(--bg-color); /* Texto contrastante */
-    font-weight: 600;
+[data-theme='neobrutalist'] .site-header a,
+[data-theme='neobrutalist'] .site-header span,
+[data-theme='neobrutalist'] .site-header select,
+[data-theme='neobrutalist'] .site-header button {
+  color: var(--header-text);
+  font-weight: 600;
 }
-[data-theme='neobrutalist'][data-mode='dark'] #header-island a:hover {
+[data-theme='neobrutalist'][data-mode='dark'] .site-header a:hover {
   color: var(--primary-color);
 }
 
-/* Header Cuadrado (Claro) */
-[data-theme='square'][data-mode='light'] #header-island > div {
-  background-color: #18181b; /* Reemplaza #1F2937 por un gris más neutro */
+/* Square */
+[data-theme='square'][data-mode='light'] .site-header {
+  --header-bg: #18181b;
+  --header-border: rgba(255,255,255,0.10);
+  --header-text: #ffffff;
+
+  background-color: var(--header-bg);
+  border: 1px solid var(--header-border);
 }
-[data-theme='square'][data-mode='light'] #header-island a,
-[data-theme='square'][data-mode='light'] #header-island span,
-[data-theme='square'][data-mode='light'] #header-island select,
-[data-theme='square'][data-mode='light'] #header-island button {
-    color: white;
+[data-theme='square'][data-mode='light'] .site-header a,
+[data-theme='square'][data-mode='light'] .site-header span,
+[data-theme='square'][data-mode='light'] .site-header select,
+[data-theme='square'][data-mode='light'] .site-header button {
+  color: var(--header-text);
 }
-[data-theme='square'] #header-island a:hover {
+[data-theme='square'] .site-header a:hover {
   color: var(--primary-color);
 }
+[data-theme='square'][data-mode='dark'] .site-header {
+  --header-bg: rgb(17, 55, 56);
+  --header-border: rgba(255,255,255,0.10);
+  --header-text: #ffffff;
 
-/* Header Cuadrado (Oscuro) */
-[data-theme='square'][data-mode='dark'] #header-island > div {
-  background-color: rgb(17, 55, 56);
+  background-color: var(--header-bg);
+  border: 1px solid var(--header-border);
 }
 
-/* Header Liquid Glass (Claro) */
-[data-theme='liquid-glass'][data-mode='light'] #header-island > div {
-  background: rgba(255, 255, 255, 0.4);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-}
+/* Liquid Glass */
+/* El header es translúcido, pero el dropdown lo querés SÓLIDO.
+   Por eso definimos --header-panel-bg como color sólido equivalente. */
+[data-theme='liquid-glass'][data-mode='light'] .site-header {
+  --header-bg: rgba(255, 255, 255, 0.4);
+  --header-border: rgba(255, 255, 255, 0.7);
+  --header-text: #0c4a6e;
+  --header-panel-bg: #ffffff; /* sólido */
 
-/* Header Liquid Glass (Oscuro) */
-[data-theme='liquid-glass'][data-mode='dark'] #header-island > div {
-  background: rgba(12, 28, 43, 0.5);
+  background: var(--header-bg);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--header-border);
+}
+[data-theme='liquid-glass'][data-mode='dark'] .site-header {
+  --header-bg: rgba(12, 28, 43, 0.5);
+  --header-border: rgba(255, 255, 255, 0.1);
+  --header-text: #e0f2fe;
+  --header-panel-bg: #0c1c2b; /* sólido */
+
+  background: var(--header-bg);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--header-border);
 }
 
 

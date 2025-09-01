@@ -1,12 +1,13 @@
 ---
-// src/components/Header.astro
 import HeaderControls from './HeaderControls.astro';
-import HeaderTitle from './HeaderTitle';
+import HeaderTitle from './HeaderTitle.astro';
 ---
-<!-- HeaderDesktop.astro -->
-<header id="header-desktop" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl rounded-main shadow-lg bg-background border border-white/10 px-4 py-2 hidden md:flex justify-between items-center">
-  <a href="#" class="font-bold text-xl text-text">
-     <HeaderTitle />
+<header
+  id="header-desktop"
+  class="site-header fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl rounded-[var(--border-radius-header)] shadow-lg px-4 py-2 hidden md:flex justify-between items-center"
+>
+  <a href="/" class="font-bold text-xl text-text">
+    <HeaderTitle />
   </a>
   <nav class="flex items-center gap-4">
     <a href="#projects" class="text-text/80 hover:text-primary transition-colors">Proyectos</a>

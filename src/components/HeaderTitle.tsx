@@ -9,18 +9,16 @@ export default function HeaderTitle() {
     if (!el.current) return;
 
     const typed = new Typed(el.current, {
-      strings: ['Ramiro Garcia', '<RamiroGarcia/>', './Ramiro-portfolio', 'RG.'],
+      strings: ['Ramiro García', '&lt;RamiroGarcia/&gt;', './Ramiro-portfolio', 'RG.'],
       typeSpeed: 120,
       backSpeed: 70,
+      backDelay: 15000,
       loop: true,
       smartBackspace: true,
-      backDelay: 20000,
     });
 
-    return () => {
-      typed.destroy();
-    };
+    return () => typed.destroy();
   }, []);
 
-  return <span ref={el} className="header-title" />;
+  return <span ref={el} className="header-title inline-block" />;
 }
