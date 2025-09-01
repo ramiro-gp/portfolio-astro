@@ -1,8 +1,6 @@
 ---
 // src/layouts/Layout.astro
 import '../styles/global.css';
-// Cambiamos .ts a .js
-import themeScript from '../scripts/theme-switcher.js?raw';
 import HeaderDesktop from '../components/HeaderDesktop.astro';
 import HeaderMobile from '../components/HeaderMobile.astro';
 import Footer from '../components/Footer.astro';
@@ -26,7 +24,20 @@ const { title } = Astro.props;
  		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
  		<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
     	<!-- <script is:inline set:html={themeScript}></script> -->
-		<script type="module" src="/src/scripts/theme-switcher.ts"></script>
+		<!-- <script type="module" src="/src/scripts/theme-switcher.ts"></script> -->
+		<script is:inline>
+		  (function(){
+		    try {
+		      var t = localStorage.getItem('theme') || 'neobrutalist';
+		      var m = localStorage.getItem('mode')  || 'light';
+		      document.documentElement.setAttribute('data-theme', t);
+		      document.documentElement.setAttribute('data-mode',  m);
+		    } catch {}
+		  })();
+		</script>
+		
+		<!-- Carga estable desde /public -->
+		<script src="/theme-switcher.js" type="module"></script>
 	</head>
 	<body class="bg-background text-text transition-colors duration-300">
 		<div class="relative z-10">
