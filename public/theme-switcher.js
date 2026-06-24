@@ -4,6 +4,17 @@
   const MODE_KEY = 'mode';
   const DEFAULT_THEME = 'neobrutalist';
   const DEFAULT_MODE = 'light';
+  const VALID_THEMES = ['neobrutalist', 'square', 'liquid-glass', 'tech-hacker'];
+  const VALID_MODES = ['light', 'dark'];
+  const LEGACY_THEME_FALLBACK = 'tech-hacker';
+
+  function normalizeTheme(theme) {
+    return VALID_THEMES.includes(theme) ? theme : LEGACY_THEME_FALLBACK;
+  }
+
+  function normalizeMode(mode) {
+    return VALID_MODES.includes(mode) ? mode : DEFAULT_MODE;
+  }
 
   function applyTheme(theme, mode) {
     document.documentElement.setAttribute('data-theme', theme);
@@ -24,15 +35,25 @@
     });
   }
 
-  const savedTheme = (typeof localStorage !== 'undefined' && localStorage.getItem(THEME_KEY)) || DEFAULT_THEME;
-  const savedMode  = (typeof localStorage !== 'undefined' && localStorage.getItem(MODE_KEY))  || DEFAULT_MODE;
+  function setSwitcherState(container, open) {
+    container.setAttribute('data-state', open ? 'open' : 'closed');
+    container.querySelector('.theme-switcher-trigger')?.setAttribute('aria-expanded', String(open));
+    container.querySelector('.theme-options')?.setAttribute('aria-hidden', String(!open));
+  }
+
+  const savedTheme = normalizeTheme((typeof localStorage !== 'undefined' && localStorage.getItem(THEME_KEY)) || DEFAULT_THEME);
+  const savedMode  = normalizeMode((typeof localStorage !== 'undefined' && localStorage.getItem(MODE_KEY))  || DEFAULT_MODE);
   applyTheme(savedTheme, savedMode);
+  savePreferences(savedTheme, savedMode);
 
   function attachEventListeners() {
     // Toggle modo claro/oscuro
     document.querySelectorAll('.mode-toggle').forEach((toggle) => {
+      if (toggle.dataset.themeSwitcherBound === 'true') return;
+      toggle.dataset.themeSwitcherBound = 'true';
+
       toggle.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || DEFAULT_THEME;
+        const currentTheme = normalizeTheme(document.documentElement.getAttribute('data-theme') || DEFAULT_THEME);
         const newMode = document.documentElement.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
         applyTheme(currentTheme, newMode);
         savePreferences(currentTheme, newMode);
@@ -44,30 +65,45 @@
       const trigger = container.querySelector('.theme-switcher-trigger');
       const optionsPanel = container.querySelector('.theme-options');
       if (!trigger || !optionsPanel) return;
+      if (trigger.dataset.themeSwitcherBound === 'true') return;
+      trigger.dataset.themeSwitcherBound = 'true';
 
       trigger.addEventListener('click', (e) => {
         e.stopPropagation();
-        const currentState = container.getAttribute('data-state');
-        container.setAttribute('data-state', currentState === 'closed' ? 'open' : 'closed');
+        setSwitcherState(container, container.getAttribute('data-state') !== 'open');
+      });
+
+      trigger.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          setSwitcherState(container, false);
+          trigger.focus();
+        }
       });
 
       optionsPanel.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-theme-button]');
         if (!btn) return;
 
-        const newTheme = btn.getAttribute('data-theme-button');
-        const currentMode = document.documentElement.getAttribute('data-mode') || DEFAULT_MODE;
+        const newTheme = normalizeTheme(btn.getAttribute('data-theme-button'));
+        const currentMode = normalizeMode(document.documentElement.getAttribute('data-mode') || DEFAULT_MODE);
         if (!newTheme) return;
 
         applyTheme(newTheme, currentMode);
         savePreferences(newTheme, currentMode);
         updateTriggerIcons(newTheme);
-        container.setAttribute('data-state', 'closed');
+        setSwitcherState(container, false);
+      });
+
+      optionsPanel.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          setSwitcherState(container, false);
+          trigger.focus();
+        }
       });
 
       document.addEventListener('click', (e) => {
         if (!container.contains(e.target)) {
-          container.setAttribute('data-state', 'closed');
+          setSwitcherState(container, false);
         }
       });
     });

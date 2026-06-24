@@ -6,21 +6,41 @@ import ProjectsSlider from './ProjectsSlider.tsx';
 const projects = [
   {
     title: "LingoHive – Academia de inglés",
-    description: "Una web tipo landing animada e interactiva para una academia de inglés. Incluye animaciones, un campo de estrellas y secciones como Precios, Testimonios y más.",
+    status: "Online",
+    description: "Landing animada e interactiva para una academia de inglés. Incluye animaciones, un campo de estrellas y secciones como precios, testimonios y contacto.",
     tags: ["Astro", "React", "GSAP", "ThreeJS", "Swiper", "Responsive"],
     link: "https://www.lingohive.fun",
-  },
-  {
-    title: "Próximo proyecto",
-    description: "Estamos trabajando en algo nuevo. Pronto disponible.",
-    tags: ["En proceso"],
-    link: "#",
+    cta: "Ver",
   },
   {
     title: "Calza Vila – Mayorista de calzados",
-    description: "Landing page para un mayorista. Secciones informativas y formulario de contacto con mapa interactivo de clientes. Cuenta con modo claro y modo oscuro.",
+    status: "Online",
+    description: "Landing page para un mayorista de calzados, con secciones informativas, formulario de contacto, mapa interactivo de clientes y modos claro/oscuro.",
     tags: ["React", "Tailwind", "Responsive", "Dark mode"],
     link: "https://www.calzavila.com.ar",
+    cta: "Ver",
+  },
+  {
+    title: "Fulbo Stats",
+    status: "Online",
+    description: "Web app en la que te registrás solo o con amigos y registrás tus goles, asistencias y estadísticas de fútbol.",
+    tags: ["Vite", "TypeScript", "Tailwind CSS", "Supabase", "Vercel", "Dark mode"],
+    link: "https://fulbostats.vercel.app",
+    cta: "Ver",
+  },
+  {
+    title: "Webs a medida",
+    status: "En desarrollo",
+    description: "Plantilla propia para vender sitios web buenos, bonitos y baratos, orientada a clientes reales.",
+    tags: ["Astro", "Tailwind CSS", "Responsive"],
+    cta: "En desarrollo",
+  },
+  {
+    title: "Dragon Ball Stock Manager",
+    status: "En desarrollo",
+    description: "Mini marketplace nicho para cartas y productos de Dragon Ball, con registro de vendedores, publicación de productos y gestión de stock desde un panel simple.",
+    tags: ["Stack por definir"],
+    cta: "En desarrollo",
   }
 ];
 ---
@@ -31,86 +51,23 @@ const projects = [
       Mis Proyectos
     </h2>
 
-    <!-- SSR + hidrata cuando entra en viewport: SEO + perf -->
-    <ProjectsSlider client:visible projects={projects} />
-
-    <!-- Fallback sin JS (opcional):
-    <noscript>
-      <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {projects.map((p) => (
-          <li>
-            <a href={p.link} target="_blank" rel="noopener noreferrer"
-               class="project-card group bg-background border-2 border-text/20 p-6 rounded-main shadow-solid transition-all duration-300 hover:-translate-y-2 flex flex-col">
-              <div class="flex-grow">
-                <h3 class="text-xl font-bold text-primary mb-2 group-hover:underline underline-offset-2">{p.title}</h3>
-                <p class="text-text/80 mb-4">{p.description}</p>
-                <div class="flex flex-wrap gap-2 mb-6">
-                  {p.tags.map((tag: string) => (
-                    <span class="bg-accent/20 text-accent font-semibold text-xs py-1 px-3 rounded-btn">{tag}</span>
-                  ))}
-                </div>
-              </div>
-              <span class="font-bold text-primary group-hover:underline self-start">Ver más →</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </noscript>
-    -->
+    <!-- Desktop usa grilla estable; mobile conserva carrusel con puntos. -->
+    <ProjectsSlider client:media="(max-width: 767px)" projects={projects} />
   </div>
 
   <style is:global>
-/* Swiper: altura fluida y slides estirados */
-.projects-swiper { padding-bottom: 36px; }
-.projects-swiper .swiper-wrapper { align-items: stretch; }
-.projects-swiper .swiper-slide { height: auto; }
-.projects-swiper .card-wrap { height: 100%; }
+    .projects-swiper { padding-bottom: 36px; overflow: hidden; }
+    .projects-swiper .swiper-wrapper { align-items: stretch; }
+    .projects-swiper .swiper-slide { height: auto; }
+    .projects-swiper .card-wrap { height: 100%; }
 
-/* En mobile ocultamos overflow para que no “asomen” otros slides */
-@media (max-width: 767px) {
-  .projects-swiper { overflow: hidden; }
-}
-/* En >= md podés dejar visible si querés sombras que sobresalgan */
-/* .projects-swiper { overflow: visible; } */
-
-/* Flechas con estilo acorde al theme en desktop */
-.projects-swiper .swiper-button-prev,
-.projects-swiper .swiper-button-next {
-  width: 40px; height: 40px; border-radius: 9999px;
-  background: color-mix(in srgb, var(--bg-color) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--text-color) 20%, transparent);
-  color: var(--text-color);
-  backdrop-filter: saturate(120%) blur(6px);
-  transition: transform .15s ease, opacity .15s ease, color .15s ease;
-  opacity: .85;
-}
-.projects-swiper .swiper-button-prev:hover,
-.projects-swiper .swiper-button-next:hover {
-  transform: translateY(-2px);
-  color: var(--primary-color);
-  opacity: 1;
-}
-@media (max-width: 767px) {
-  .projects-swiper .swiper-button-prev,
-  .projects-swiper .swiper-button-next { display: none; }
-}
-
-/* Bullets */
-.projects-swiper .swiper-pagination-bullet {
-  background: var(--text-color);
-  opacity: .3;
-}
-.projects-swiper .swiper-pagination-bullet-active {
-  background: var(--primary-color);
-  opacity: 1;
-}
-
-/* Animación horizontal sutil para el hint (dos flechas) */
-@keyframes swipe-h {
-  0%, 100% { transform: translateX(0);    opacity: .9; }
-  50%      { transform: translateX(-10px); opacity: .6; }
-}
-.animate-swipe-h         { animation: swipe-h 1.6s ease-in-out infinite; }
-.animate-swipe-h-delayed { animation: swipe-h 1.6s ease-in-out .25s infinite; }
+    .projects-swiper .swiper-pagination-bullet {
+      background: var(--text-color);
+      opacity: .3;
+    }
+    .projects-swiper .swiper-pagination-bullet-active {
+      background: var(--primary-color);
+      opacity: 1;
+    }
   </style>
 </section>

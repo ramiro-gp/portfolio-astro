@@ -7,29 +7,42 @@ import Footer from '../components/Footer.astro';
 
 interface Props {
 	title: string;
+	description?: string;
 }
 
-const { title } = Astro.props;
+const {
+	title,
+	description = 'Portfolio de Ramiro Garcia, frontend developer especializado en experiencias web interactivas, responsivas y de alto rendimiento.',
+} = Astro.props;
 ---
 <!doctype html>
 <html lang="es" data-theme="neobrutalist" data-mode="light">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Portfolio de Ramiro Garcia" />
+		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:locale" content="es_AR" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
  		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
  		<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
-    	<!-- <script is:inline set:html={themeScript}></script> -->
-		<!-- <script type="module" src="/src/scripts/theme-switcher.ts"></script> -->
 		<script is:inline>
 		  (function(){
 		    try {
+		      var validThemes = ['neobrutalist', 'square', 'liquid-glass', 'tech-hacker'];
+		      var validModes = ['light', 'dark'];
 		      var t = localStorage.getItem('theme') || 'neobrutalist';
 		      var m = localStorage.getItem('mode')  || 'light';
+		      if (validThemes.indexOf(t) === -1) t = 'tech-hacker';
+		      if (validModes.indexOf(m) === -1) m = 'light';
 		      document.documentElement.setAttribute('data-theme', t);
 		      document.documentElement.setAttribute('data-mode',  m);
 		    } catch {}

@@ -8,13 +8,13 @@ import HeaderTitle from './HeaderTitle.astro';
   class="site-header fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl rounded-[var(--border-radius-header)] shadow-lg px-6 py-4 flex md:hidden flex-col"
 >
   <div class="flex justify-between items-center">
-    <a href="/" class="font-bold text-xl text-text">
+    <a href="/" class="font-bold text-xl text-text" aria-label="Ir al inicio del portfolio de Ramiro Garcia">
       <HeaderTitle />
     </a>
 
     <button
       id="hamburger"
-      class="text-text focus:outline-none"
+      class="text-text rounded-btn"
       aria-expanded="false"
       aria-controls="mobile-menu"
       aria-label="Abrir menú"
@@ -51,6 +51,8 @@ import HeaderTitle from './HeaderTitle.astro';
       const hamburger = document.getElementById('hamburger');
       const mobileMenu = document.getElementById('mobile-menu');
       if (!header || !hamburger || !mobileMenu) return;
+      if (hamburger.dataset.bound === 'true') return;
+      hamburger.dataset.bound = 'true';
 
       let open = false;
 
@@ -75,10 +77,20 @@ import HeaderTitle from './HeaderTitle.astro';
       };
 
       hamburger.addEventListener('click', () => toggle(!open));
+      hamburger.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') toggle(false);
+      });
 
       // Cerrar al navegar por anclas internas
       mobileMenu.querySelectorAll('a[href^="#"]').forEach((a) => {
         a.addEventListener('click', () => toggle(false));
+      });
+
+      mobileMenu.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          toggle(false);
+          hamburger.focus();
+        }
       });
     };
 
