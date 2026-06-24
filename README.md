@@ -1,46 +1,47 @@
-# Astro Starter Kit: Basics
+# Ramiro Garcia Portfolio
+
+Portfolio personal desarrollado con Astro. El sitio presenta proyectos frontend y una identidad visual editable desde el navegador, con tres estilos principales: neobrutalista, cuadrado y liquid glass. Cada estilo conserva modo claro y modo oscuro.
+
+## Sitio
+
+Link público: pendiente de configurar.
+
+## Stack
+
+- Astro
+- TypeScript
+- React
+- Tailwind CSS
+- Swiper
+- Typed.js
+
+## Comandos
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
+npm run dev
+npm run build
+npm run preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Estructura
 
 ```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+src/
+  components/   Componentes de UI, header, hero, proyectos, contacto y selector visual
+  layouts/      Layout base con metadata y estructura HTML
+  pages/        Páginas del sitio
+  styles/       Estilos globales, temas y tokens visuales
+public/         Assets públicos y scripts servidos tal cual
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Scripts disponibles
 
-## 🧞 Commands
+- `npm run dev`: inicia el servidor local de desarrollo.
+- `npm run build`: genera la versión de producción.
+- `npm run preview`: previsualiza el build generado.
+- `npm run astro`: ejecuta comandos de la CLI de Astro.
 
-All commands are run from the root of the project, from a terminal:
+## Notas
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+El selector visual es parte de la propuesta del portfolio: no es solo un cambio de color, sino una forma de mostrar criterio visual, interacción y cuidado por la experiencia.

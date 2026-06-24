@@ -1,8 +1,15 @@
 ---
 import ThemeIcon from './ThemeIcon.astro';
 
-const themes = ['neobrutalist', 'square', 'liquid-glass'] as const;
+const themes = [
+  { id: 'neobrutalist', label: 'Neobrutalist' },
+  { id: 'square', label: 'Square' },
+  { id: 'liquid-glass', label: 'Glass' },
+  { id: 'tech-hacker', label: 'Tech' },
+] as const;
 const { mobile = false } = Astro.props;
+const controlId = mobile ? 'mobile' : 'desktop';
+const themeOptionsId = `theme-options-${controlId}`;
 
 /* Alineado perfecto en mobile: dos botones iguales (h-9 w-9) */
 const wrapperClass = mobile
@@ -25,25 +32,32 @@ const optionsClass = ['theme-options'].join(' ');
 ---
 <div class={wrapperClass}>
   <div class={containerClass} data-state="closed">
-    <button type="button" class={triggerClass} aria-label="Cambiar tema">
+    <button
+      type="button"
+      class={triggerClass}
+      aria-label="Cambiar tema"
+      aria-expanded="false"
+      aria-controls={themeOptionsId}
+    >
       {themes.map((theme) => (
-        <div data-icon-for={theme} class="theme-icon-wrapper">
-          <ThemeIcon theme={theme} />
+        <div data-icon-for={theme.id} class="theme-icon-wrapper">
+          <ThemeIcon theme={theme.id} />
         </div>
       ))}
     </button>
 
-    <div class={optionsClass} role="menu" aria-label="Elegir tema">
+    <div id={themeOptionsId} class={optionsClass} role="menu" aria-label="Elegir tema" aria-hidden="true">
       <div class="flex flex-col items-center gap-1">
         {themes.map((theme) => (
           <button 
             type="button"
-            data-theme-button={theme}
+            data-theme-button={theme.id}
             class="theme-button p-2 rounded-btn hover:bg-white/10 w-full"
-            aria-label={`Cambiar a tema ${theme}`}
+            aria-label={`Cambiar a tema ${theme.label}`}
+            title={theme.label}
             role="menuitem"
           >
-            <ThemeIcon theme={theme} />
+            <ThemeIcon theme={theme.id} />
           </button>
         ))}
       </div>
@@ -144,6 +158,21 @@ const optionsClass = ['theme-options'].join(' ');
 [data-theme='liquid-glass'] .theme-button { border-radius: 0; }
 [data-theme='liquid-glass'] .theme-button:first-child { border-top-left-radius: 9999px; border-top-right-radius: 9999px; }
 [data-theme='liquid-glass'] .theme-button:last-child  { border-bottom-left-radius: 9999px; border-bottom-right-radius: 9999px; }
+
+/* Tech: panel compacto y limpio, con borde luminoso sutil */
+[data-theme='tech-hacker'] .theme-switcher-trigger,
+[data-theme='tech-hacker'] .mode-toggle {
+  background: var(--tech-surface, var(--bg-color));
+  border-color: var(--tech-border, color-mix(in srgb, var(--primary-color) 28%, transparent));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary-color) 10%, transparent);
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+[data-theme='tech-hacker'] .theme-switcher-trigger:hover,
+[data-theme='tech-hacker'] .mode-toggle:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--primary-color) 18%, transparent);
+  transform: translateY(-1px);
+}
 </style>
 
 <!-- Fallback ultra simple por si el script global no montó aún -->
@@ -152,14 +181,23 @@ const optionsClass = ['theme-options'].join(' ');
     document.querySelectorAll('.theme-switcher-container').forEach((c) => {
       const t = c.querySelector('.theme-switcher-trigger');
       if (!t) return;
+      if (t.dataset.fallbackBound === 'true') return;
+      t.dataset.fallbackBound = 'true';
       t.addEventListener('click', (e) => {
         e.stopPropagation();
-        c.setAttribute('data-state', c.getAttribute('data-state') === 'open' ? 'closed' : 'open');
+        const nextState = c.getAttribute('data-state') === 'open' ? 'closed' : 'open';
+        c.setAttribute('data-state', nextState);
+        t.setAttribute('aria-expanded', String(nextState === 'open'));
+        c.querySelector('.theme-options')?.setAttribute('aria-hidden', String(nextState !== 'open'));
       });
     });
     document.addEventListener('click', (e) => {
       document.querySelectorAll('.theme-switcher-container[data-state="open"]').forEach((c) => {
-        if (!c.contains(e.target)) c.setAttribute('data-state', 'closed');
+        if (!c.contains(e.target)) {
+          c.setAttribute('data-state', 'closed');
+          c.querySelector('.theme-switcher-trigger')?.setAttribute('aria-expanded', 'false');
+          c.querySelector('.theme-options')?.setAttribute('aria-hidden', 'true');
+        }
       });
     });
   });

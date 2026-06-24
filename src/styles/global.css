@@ -7,6 +7,29 @@ button, a {
   cursor: pointer;
 }
 
+:where(a, button, [role="button"], [tabindex]):focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 4px;
+}
+
+:where(.site-header a, .site-header button):focus-visible {
+  outline-color: currentColor;
+}
+
+:where(a, button) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+::-moz-selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
 /* Ocultar la barra de scroll en navegadores WebKit (Chrome, Safari, etc.) */
 html::-webkit-scrollbar {
   display: none;
@@ -38,6 +61,8 @@ h1, h2, h3, h4, h5, h6 {
   --accent-color: #457b9d; /* Azul apagado */
   --shadow-offset: 4px;
   --shadow-color: #1e1e1e;
+  --selection-bg: #1e1e1e;
+  --selection-text: #f4f1ea;
 }
 [data-theme='neobrutalist'][data-mode='dark'] {
   --bg-color: #1e1e1e; /* Fondo oscuro */
@@ -45,6 +70,8 @@ h1, h2, h3, h4, h5, h6 {
   --primary-color: #e63946; /* El rojo resalta bien en oscuro */
   --accent-color: #489fb5; /* Un celeste claro para el acento */
   --shadow-color: #000000;
+  --selection-bg: #f4f1ea;
+  --selection-text: #1e1e1e;
 }
 
 /* --- Tema Square --- */
@@ -67,10 +94,14 @@ h1, h2, h3, h4, h5, h6 {
   /* Sombra */
   --shadow-color: transparent;
   --shadow-offset: 0px;
+  --selection-bg: #6D28D9;
+  --selection-text: #ffffff;
 }
 [data-theme='square'][data-mode='dark'] {
   --bg-color: #111827;
   --text-color: #F5F5F5;
+  --selection-bg: #34D399;
+  --selection-text: #031b12;
 }
 
 /* --- Tema Liquid Glass --- */
@@ -86,11 +117,59 @@ h1, h2, h3, h4, h5, h6 {
    /* Sombra */
   --shadow-color: transparent;
   --shadow-offset: 0px;
+  --selection-bg: #0ea5e9;
+  --selection-text: #001b2e;
 }
 [data-theme='liquid-glass'][data-mode='dark'] {
   --bg-color: #081c2b; /* Fondo azul noche */
   --text-color: #e0f2fe; /* Texto celeste claro */
   --primary-color: #38bdf8; /* Celeste más brillante */
+  --selection-bg: #7dd3fc;
+  --selection-text: #06111f;
+}
+
+/* --- Tema Tech Hacker --- */
+[data-theme='tech-hacker'] {
+  --tech-font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --font-heading: var(--tech-font-mono);
+  --font-body: var(--tech-font-mono);
+  --bg-color: #f7fbff;
+  --text-color: #0b1220;
+  --primary-color: #0077ff;
+  --accent-color: #0f9f8f;
+  --border-radius-main: 0.75rem;
+  --border-radius-btn: 0.5rem;
+  --border-radius-header: 0.875rem;
+  --shadow-color: rgba(0, 119, 255, 0.16);
+  --shadow-offset: 0px;
+  --tech-surface: rgba(255, 255, 255, 0.84);
+  --tech-surface-strong: #ffffff;
+  --tech-border: rgba(0, 119, 255, 0.18);
+  --tech-grid: rgba(0, 119, 255, 0.08);
+  --selection-bg: #003f8c;
+  --selection-text: #f8fbff;
+}
+[data-theme='tech-hacker'][data-mode='dark'] {
+  --bg-color: #050b14;
+  --text-color: #dbeafe;
+  --primary-color: #38bdf8;
+  --accent-color: #2dd4bf;
+  --shadow-color: rgba(56, 189, 248, 0.16);
+  --tech-surface: rgba(8, 18, 32, 0.82);
+  --tech-surface-strong: #081220;
+  --tech-border: rgba(56, 189, 248, 0.22);
+  --tech-grid: rgba(56, 189, 248, 0.10);
+  --selection-bg: #2dd4bf;
+  --selection-text: #03110f;
+}
+
+[data-theme='tech-hacker'] body {
+  background-image:
+    linear-gradient(var(--tech-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tech-grid) 1px, transparent 1px),
+    radial-gradient(circle at 15% 12%, color-mix(in srgb, var(--primary-color) 12%, transparent), transparent 32%),
+    radial-gradient(circle at 85% 18%, color-mix(in srgb, var(--accent-color) 10%, transparent), transparent 28%);
+  background-size: 48px 48px, 48px 48px, auto, auto;
 }
 
 /* ESTILOS DE COMPONENTES ESPECÍFICOS */
@@ -105,7 +184,8 @@ h1, h2, h3, h4, h5, h6 {
 /* Por defecto, todos los grupos de figuras están ocultos */
 .shapes-square,
 .shapes-neobrutalist,
-.shapes-glass {
+.shapes-glass,
+.shapes-tech {
   display: none;
 }
 
@@ -113,6 +193,7 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='square'] .shapes-square { display: block; }
 [data-theme='neobrutalist'] .shapes-neobrutalist { display: block; }
 [data-theme='liquid-glass'] .shapes-glass { display: block; }
+[data-theme='tech-hacker'] .shapes-tech { display: block; }
 
 
 /* HEADER */
@@ -191,6 +272,32 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
+/* Tech */
+[data-theme='tech-hacker'] .site-header {
+  --header-bg: var(--tech-surface);
+  --header-border: var(--tech-border);
+  --header-text: var(--text-color);
+  --header-panel-bg: var(--tech-surface-strong);
+
+  background: var(--header-bg);
+  border: 1px solid var(--header-border);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255,255,255,0.35);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+[data-theme='tech-hacker'] .site-header a,
+[data-theme='tech-hacker'] .site-header span,
+[data-theme='tech-hacker'] .site-header select,
+[data-theme='tech-hacker'] .site-header button {
+  color: var(--header-text);
+}
+[data-theme='tech-hacker'] .site-header a:hover {
+  color: var(--primary-color);
+}
+[data-theme='tech-hacker'][data-mode='dark'] .site-header {
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
 /* CARDS */
 /* Cards Square y Neo con bg */
 [data-theme='square'] .project-card,
@@ -208,6 +315,20 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme='liquid-glass'][data-mode='dark'] .project-card {
   background-color: rgba(12, 28, 43, 0.5);
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Cards Tech */
+[data-theme='tech-hacker'] .project-card {
+  background: var(--tech-surface);
+  border: 1px solid var(--tech-border);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255,255,255,0.42);
+}
+[data-theme='tech-hacker'] .project-card:hover {
+  border-color: color-mix(in srgb, var(--primary-color) 48%, var(--tech-border));
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12), 0 0 26px color-mix(in srgb, var(--primary-color) 12%, transparent);
+}
+[data-theme='tech-hacker'][data-mode='dark'] .project-card {
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
 /* Cards  Neobrutalista */
